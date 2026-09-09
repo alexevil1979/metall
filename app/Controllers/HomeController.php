@@ -30,7 +30,6 @@ final class HomeController
             'gallery' => self::galleryItems(),
             'faq' => $faq,
             'settings' => Setting::all(),
-            'usdRate' => \App\Core\Currency::usdRate(),
         ], 'layouts/main');
     }
 

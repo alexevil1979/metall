@@ -6,7 +6,6 @@
 /** @var array $gallery */
 /** @var array $faq */
 /** @var array $settings */
-/** @var float|null $usdRate */
 use App\Core\Csrf;
 
 $h1 = $seo['h1'] ?? setting('hero_offer');
@@ -166,7 +165,7 @@ foreach ($faq as $item) {
         </header>
         <div class="services-grid">
             <?php foreach ($services as $service):
-                $price = money_offer($service['price_from'] !== null ? (float)$service['price_from'] : null);
+                $price = money($service['price_from'] !== null ? (float)$service['price_from'] : null);
             ?>
             <article class="service-card<?= !empty($service['is_featured']) ? ' is-featured' : '' ?> reveal">
                 <div class="service-top">
@@ -176,11 +175,8 @@ foreach ($faq as $item) {
                 <h3><?= e(service_field($service, 'title')) ?></h3>
                 <p><?= e(service_field($service, 'short_text')) ?></p>
                 <div class="service-price">
-                    <?php if ($price['rub'] !== ''): ?>
-                        <div class="price-stack">
-                            <strong><?= e(__('price_from')) ?> <?= e($price['rub']) ?></strong>
-                            <?php if ($price['usd'] !== ''): ?><small class="price-usd"><?= e($price['usd']) ?> <span class="sr-only"><?= e(__('usd_hint')) ?></span></small><?php endif; ?>
-                        </div>
+                    <?php if ($price !== ''): ?>
+                        <strong><?= e(__('price_from')) ?> <?= e($price) ?></strong>
                     <?php else: ?>
                         <strong><?= e(__('price_on_request')) ?></strong>
                     <?php endif; ?>
@@ -205,18 +201,15 @@ foreach ($faq as $item) {
         <div class="packages-grid">
             <?php foreach ($packages as $pkg):
                 $features = package_features($pkg);
-                $price = money_offer($pkg['price'] !== null ? (float)$pkg['price'] : null);
+                $price = money($pkg['price'] !== null ? (float)$pkg['price'] : null);
             ?>
             <article class="package-card<?= !empty($pkg['is_featured']) ? ' is-featured' : '' ?> reveal">
                 <?php if (!empty($pkg['is_featured'])): ?><div class="package-ribbon"><?= e(__('optimal')) ?></div><?php endif; ?>
                 <h3><?= e(package_field($pkg, 'title')) ?></h3>
                 <p><?= e(package_field($pkg, 'description')) ?></p>
                 <div class="package-price">
-                    <?php if ($price['rub'] !== ''): ?>
-                        <div class="price-stack">
-                            <strong><?= e($price['rub']) ?></strong>
-                            <?php if ($price['usd'] !== ''): ?><small class="price-usd"><?= e($price['usd']) ?></small><?php endif; ?>
-                        </div>
+                    <?php if ($price !== ''): ?>
+                        <strong><?= e($price) ?></strong>
                     <?php endif; ?>
                     <span class="price-note"><?= e($pkg['price_note'] ?? '') ?></span>
                 </div>

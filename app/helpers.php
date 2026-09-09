@@ -30,25 +30,15 @@ function money(?float $amount): string
     return number_format($amount, 0, '.', ' ') . ' ₽';
 }
 
-/** @return array{rub:string,usd:string} */
 function money_offer(?float $amount): array
 {
-    if ($amount === null) {
-        return ['rub' => '', 'usd' => ''];
-    }
-    $rub = number_format($amount, 0, '.', ' ') . ' ₽';
-    $usdVal = \App\Core\Currency::toUsd($amount);
-    $usd = $usdVal !== null ? '~$' . number_format($usdVal, 2, '.', '') : '';
-    return ['rub' => $rub, 'usd' => $usd];
+    $rub = money($amount);
+    return ['rub' => $rub, 'usd' => ''];
 }
 
 function money_dual(?float $amount): string
 {
-    $o = money_offer($amount);
-    if ($o['rub'] === '') {
-        return '';
-    }
-    return $o['usd'] !== '' ? $o['rub'] . ' · ' . $o['usd'] : $o['rub'];
+    return money($amount);
 }
 
 function period_label(string $period): string

@@ -60,7 +60,6 @@ $router->post('/admin/portfolio/{id}/delete', [PortfolioController::class, 'dele
 
 $router->get('/admin/settings', [SettingsController::class, 'edit']);
 $router->post('/admin/settings', [SettingsController::class, 'update']);
-$router->post('/admin/settings/refresh-usd', [SettingsController::class, 'refreshUsd']);
 
 $router->get('/admin/seo', [SeoController::class, 'edit']);
 $router->post('/admin/seo', [SeoController::class, 'update']);

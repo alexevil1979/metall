@@ -313,9 +313,6 @@ html[data-theme="dark"] .btn-primary { color: #fff; }
 .service-price, .package-price {
   display: flex; flex-wrap: wrap; gap: .3rem .7rem; align-items: baseline; margin-bottom: 1rem;
 }
-.price-stack { display: flex; flex-direction: column; gap: .1rem; }
-.price-stack strong { font-size: 1.12rem; color: var(--text); }
-.price-usd { color: var(--muted); font-size: .8rem; font-weight: 500; }
 .price-note, .muted { color: var(--muted); }
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;

@@ -29,16 +29,5 @@
     <label>Google Analytics<textarea name="google_analytics" rows="4"><?= e($s['google_analytics'] ?? '') ?></textarea></label>
     <label>FAQ JSON (RU)<textarea name="faq_json" rows="10"><?= e($s['faq_json'] ?? '') ?></textarea></label>
 
-    <fieldset>
-        <legend>Курс USD (ЦБ РФ)</legend>
-        <p class="muted">Цены в БД в рублях. USD — мелкая подпись на карточках.</p>
-        <label>USD rate (RUB per $)<input name="usd_rate" type="number" step="0.0001" value="<?= e($s['usd_rate'] ?? '') ?>"></label>
-        <p class="muted">Обновлён: <?= e($s['usd_rate_updated_at'] ?? '—') ?></p>
-    </fieldset>
-
     <button class="btn" type="submit">Сохранить</button>
-</form>
-<form method="post" action="/admin/settings/refresh-usd" style="margin-top:1rem">
-    <?= Csrf::field() ?>
-    <button class="btn" type="submit">Обновить курс с ЦБ РФ</button>
 </form>
