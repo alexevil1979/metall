@@ -8,7 +8,10 @@ $pageTitle = $seo['title'] ?? (brand_name() . ' — ' . setting('site_role'));
 $pageDesc = $seo['description'] ?? setting('site_tagline');
 $ogTitle = $seo['og_title'] ?? $pageTitle;
 $ogDesc = $seo['og_description'] ?? $pageDesc;
-$ogImage = media_url($seo['og_image'] ?? setting('og_image') ?: setting('avatar_path'));
+$ogImage = media_url($seo['og_image'] ?? setting('og_image') ?: setting('avatar_path') ?: '/assets/img/channel-avatar.jpg');
+if ($ogImage === '' || !str_contains($ogImage, 'http')) {
+    $ogImage = app_url(ltrim($ogImage ?: 'assets/img/channel-avatar.jpg', '/'));
+}
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $canonical = $seo['canonical'] ?? Lang::absoluteUrl($path === '/' ? '/' : $path);
 $robots = $seo['robots'] ?? 'index,follow';
@@ -44,7 +47,9 @@ $robots = $seo['robots'] ?? 'index,follow';
 <header class="site-header" id="top">
     <div class="container header-inner">
         <a class="brand" href="<?= e(lang_url('/')) ?>">
-            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-mark" aria-hidden="true">
+                <img src="/assets/img/channel-avatar.jpg" width="42" height="42" alt="">
+            </span>
             <span class="brand-text">
                 <strong><bdi dir="ltr"><?= e(brand_name()) ?></bdi></strong>
                 <small class="brand-role"><?= e(setting('site_role')) ?></small>
@@ -54,6 +59,7 @@ $robots = $seo['robots'] ?? 'index,follow';
         <nav class="nav" id="siteNav" aria-label="<?= e(__('nav_aria')) ?>">
             <a href="<?= e(lang_url('/#services')) ?>"><?= e(__('nav_services')) ?></a>
             <a href="<?= e(lang_url('/#packages')) ?>"><?= e(__('nav_packages')) ?></a>
+            <a href="<?= e(lang_url('/#gallery')) ?>"><?= e(__('nav_gallery')) ?></a>
             <a href="<?= e(lang_url('/#process')) ?>"><?= e(__('nav_process')) ?></a>
             <a href="<?= e(lang_url('/#faq')) ?>"><?= e(__('nav_faq')) ?></a>
             <a href="<?= e(lang_url('/#lead')) ?>"><?= e(__('nav_contacts')) ?></a>

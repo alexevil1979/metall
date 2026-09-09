@@ -27,9 +27,21 @@ final class HomeController
             'services' => Service::active(),
             'packages' => Package::active(),
             'portfolio' => Portfolio::active(),
+            'gallery' => self::galleryItems(),
             'faq' => $faq,
             'settings' => Setting::all(),
             'usdRate' => \App\Core\Currency::usdRate(),
         ], 'layouts/main');
+    }
+
+    /** @return list<array{file:string,id:string,title:string,url:string}> */
+    private static function galleryItems(): array
+    {
+        $path = dirname(__DIR__, 2) . '/public/assets/img/gallery/manifest.json';
+        if (!is_file($path)) {
+            return [];
+        }
+        $data = json_decode((string)file_get_contents($path), true);
+        return is_array($data) ? $data : [];
     }
 }

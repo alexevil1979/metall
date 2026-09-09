@@ -3,6 +3,7 @@
 /** @var array $services */
 /** @var array $packages */
 /** @var array $portfolio */
+/** @var array $gallery */
 /** @var array $faq */
 /** @var array $settings */
 /** @var float|null $usdRate */
@@ -13,6 +14,10 @@ $name = brand_name();
 $role = setting('site_role');
 $homeUrl = app_url(ltrim(lang_url('/'), '/'));
 $avatar = trim((string)setting('avatar_path'));
+if ($avatar === '') {
+    $avatar = '/assets/img/channel-avatar.jpg';
+}
+$gallery = $gallery ?? [];
 $exp = setting('experience_years', '10+');
 if ($exp !== '' && !str_contains($exp, '+') && preg_match('/^\d+$/', $exp)) {
     $exp .= '+';
@@ -27,9 +32,16 @@ $jsonLdOrg = [
     'email' => setting('email'),
     'telephone' => setting('phone'),
     'description' => setting('site_tagline'),
+    'logo' => app_url('assets/img/channel-avatar.jpg'),
+    'image' => app_url('assets/img/channel-avatar.jpg'),
+    'sameAs' => array_values(array_filter([
+        setting('youtube') ?: 'https://www.youtube.com/@МеталлКомплект31',
+        setting('vk'),
+        setting('telegram'),
+    ])),
     'address' => ['@type' => 'PostalAddress', 'addressLocality' => setting('city'), 'addressCountry' => 'RU'],
 ];
-if ($avatar !== '') {
+if ($avatar !== '' && !str_contains((string)($jsonLdOrg['image'] ?? ''), 'channel-avatar')) {
     $jsonLdOrg['image'] = media_url($avatar);
 }
 $offersClean = [];
@@ -80,6 +92,7 @@ foreach ($faq as $item) {
 
 <section class="hero" aria-labelledby="hero-title">
     <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-scrim" aria-hidden="true"></div>
     <div class="container hero-grid">
         <div class="hero-copy reveal">
             <p class="eyebrow"><bdi dir="ltr"><?= e($name) ?></bdi> · <?= e($role) ?></p>
@@ -92,30 +105,12 @@ foreach ($faq as $item) {
             </ul>
             <div class="hero-cta">
                 <a class="btn btn-primary" href="#lead"><?= e(__('cta_lead')) ?></a>
-                <a class="btn btn-ghost" href="#services"><?= e(__('discuss')) ?></a>
+                <a class="btn btn-ghost on-dark" href="#gallery"><?= e(__('nav_gallery')) ?></a>
             </div>
         </div>
         <div class="hero-visual reveal">
             <div class="portrait-card">
-                <?php if ($avatar !== ''): ?>
-                <img class="portrait portrait-photo" src="<?= e(media_url($avatar)) ?>" width="320" height="380" alt="<?= e(__('portrait_alt')) ?>" fetchpriority="high" decoding="async">
-                <?php else: ?>
-                <svg class="portrait" viewBox="0 0 320 380" width="320" height="380" role="img" aria-label="<?= e(__('portrait_alt')) ?>">
-                    <defs>
-                        <linearGradient id="pg" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#3d4450"/>
-                            <stop offset="100%" stop-color="#1a1d24"/>
-                        </linearGradient>
-                    </defs>
-                    <rect width="320" height="380" rx="24" fill="url(#pg)"/>
-                    <path d="M40 290 Q160 120 280 290" fill="none" stroke="#c4a574" stroke-width="3" opacity=".85"/>
-                    <path d="M70 290 Q160 170 250 290" fill="none" stroke="#e8e4dc" stroke-width="2" opacity=".4"/>
-                    <line x1="40" y1="290" x2="280" y2="290" stroke="#8a9099" stroke-width="2" opacity=".5"/>
-                    <text x="160" y="140" text-anchor="middle" fill="#f5f2eb" font-size="16" font-weight="700" font-family="Segoe UI,system-ui,sans-serif">МеталлКомплект31</text>
-                    <text x="160" y="168" text-anchor="middle" fill="#c4a574" font-size="12" font-family="Segoe UI,system-ui,sans-serif">Арки · Каркасы · Доставка РФ</text>
-                    <text x="160" y="340" text-anchor="middle" fill="#c8cdd4" font-size="13" font-family="Segoe UI,system-ui,sans-serif"><?= e($role) ?></text>
-                </svg>
-                <?php endif; ?>
+                <img class="portrait portrait-photo" src="<?= e(str_starts_with($avatar, 'http') || str_starts_with($avatar, '/') ? $avatar : media_url($avatar)) ?>" width="320" height="320" alt="<?= e(__('portrait_alt')) ?>" fetchpriority="high" decoding="async">
                 <div class="portrait-meta">
                     <strong><bdi dir="ltr"><?= e($name) ?></bdi></strong>
                     <span><?= e(setting('city')) ?></span>
@@ -278,7 +273,30 @@ foreach ($faq as $item) {
 </section>
 <?php endif; ?>
 
-<section class="section<?= $portfolio ? '' : ' section-alt' ?>" id="stack" aria-labelledby="stack-title">
+<section class="section<?= $portfolio ? '' : ' section-alt' ?>" id="gallery" aria-labelledby="gallery-title">
+    <div class="container">
+        <header class="section-head reveal">
+            <h2 id="gallery-title"><?= e(__('gallery_title')) ?></h2>
+            <p><?= e(__('gallery_sub')) ?></p>
+        </header>
+        <?php if ($gallery): ?>
+        <div class="gallery-grid">
+            <?php foreach ($gallery as $item): ?>
+            <a class="gallery-card reveal" href="<?= e($item['url'] ?? '#') ?>" target="_blank" rel="noopener">
+                <img src="/assets/img/gallery/<?= e($item['file'] ?? '') ?>" width="360" height="560" alt="<?= e($item['title'] ?? '') ?>" loading="lazy" decoding="async">
+                <span class="play" aria-hidden="true"></span>
+                <span class="gallery-cap"><?= e($item['title'] ?? '') ?></span>
+            </a>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+        <p class="rate-note reveal" style="margin-top:1.5rem">
+            <a class="btn btn-secondary" href="<?= e(setting('youtube') ?: 'https://www.youtube.com/@МеталлКомплект31') ?>" target="_blank" rel="noopener"><?= e(__('gallery_youtube')) ?></a>
+        </p>
+    </div>
+</section>
+
+<section class="section" id="stack" aria-labelledby="stack-title">
     <div class="container">
         <header class="section-head reveal">
             <h2 id="stack-title"><?= e(__('stack_title_only', 'Стек')) ?></h2>

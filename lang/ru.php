@@ -6,6 +6,7 @@ return [
     'skip_to_content' => 'К содержимому',
     'nav_services' => 'Продукция',
     'nav_packages' => 'Комплекты',
+    'nav_gallery' => 'Видео',
     'nav_process' => 'Как заказать',
     'nav_faq' => 'FAQ',
     'nav_contacts' => 'Контакты',
@@ -54,6 +55,9 @@ return [
     'cases_title' => 'Объекты',
     'cases_sub' => 'Примеры применения комплектов.',
     'case_link' => 'Подробнее',
+    'gallery_title' => 'Видео с производства',
+    'gallery_sub' => 'Реальные каркасы, сборка на болтах и монтаж — с нашего YouTube-канала.',
+    'gallery_youtube' => 'Смотреть канал на YouTube',
 
     'faq_title' => 'FAQ',
     'faq_sub' => 'Частые вопросы до заказа.',
