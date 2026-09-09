@@ -19,7 +19,9 @@ $robots = $seo['robots'] ?? 'index,follow';
 <html lang="ru" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#c4161c">
+    <meta name="color-scheme" content="light dark">
     <title><?= e($pageTitle) ?></title>
     <meta name="description" content="<?= e($pageDesc) ?>">
     <meta name="robots" content="<?= e($robots) ?>">
@@ -36,7 +38,9 @@ $robots = $seo['robots'] ?? 'index,follow';
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= e($ogTitle) ?>">
     <meta name="twitter:description" content="<?= e($ogDesc) ?>">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/assets/img/channel-avatar.jpg">
     <link rel="stylesheet" href="/assets/css/main.css">
     <?php if (!empty($settings['yandex_metrika'])): ?>
     <?= $settings['yandex_metrika'] ?>

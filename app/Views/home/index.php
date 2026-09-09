@@ -105,7 +105,7 @@ foreach ($faq as $item) {
             </ul>
             <div class="hero-cta">
                 <a class="btn btn-primary" href="#lead"><?= e(__('cta_lead')) ?></a>
-                <a class="btn btn-ghost on-dark" href="#gallery"><?= e(__('nav_gallery')) ?></a>
+                <a class="btn btn-ghost on-dark" href="#services"><?= e(__('cta_services')) ?></a>
             </div>
         </div>
         <div class="hero-visual reveal">

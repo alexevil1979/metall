@@ -18,18 +18,28 @@
 
   const navToggle = document.getElementById('navToggle');
   const nav = document.getElementById('siteNav') || document.querySelector('.nav');
+  function setNavOpen(open) {
+    if (!nav || !navToggle) return;
+    nav.classList.toggle('open', open);
+    document.body.classList.toggle('nav-open', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
   if (navToggle && nav) {
     navToggle.addEventListener('click', function () {
-      const open = nav.classList.toggle('open');
-      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      setNavOpen(!nav.classList.contains('open'));
     });
     nav.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () {
-        if (window.matchMedia('(max-width: 767px)').matches) {
-          nav.classList.remove('open');
-          navToggle.setAttribute('aria-expanded', 'false');
+        if (window.matchMedia('(max-width: 899px)').matches) {
+          setNavOpen(false);
         }
       });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setNavOpen(false);
+    });
+    window.addEventListener('resize', function () {
+      if (window.matchMedia('(min-width: 900px)').matches) setNavOpen(false);
     });
   }
 
