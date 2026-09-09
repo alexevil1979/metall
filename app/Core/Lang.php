@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-/**
- * Языки как на hiddifysales.com: ru, en, fa, zh, tr, ar.
- * URL: / = ru, /en, /fa, /zh, /tr, /ar (+ /ru → редирект на /).
- */
+/** Только русский язык. */
 final class Lang
 {
     public const DEFAULT = 'ru';
@@ -15,11 +12,6 @@ final class Lang
     /** @var array<string, array{name:string,native:string,locale:string,dir:string,og:string}> */
     public const LOCALES = [
         'ru' => ['name' => 'Russian', 'native' => 'Русский', 'locale' => 'ru_RU', 'dir' => 'ltr', 'og' => 'ru_RU'],
-        'en' => ['name' => 'English', 'native' => 'English', 'locale' => 'en_US', 'dir' => 'ltr', 'og' => 'en_US'],
-        'fa' => ['name' => 'Persian', 'native' => 'فارسی', 'locale' => 'fa_IR', 'dir' => 'rtl', 'og' => 'fa_IR'],
-        'zh' => ['name' => 'Chinese', 'native' => '中文', 'locale' => 'zh_CN', 'dir' => 'ltr', 'og' => 'zh_CN'],
-        'tr' => ['name' => 'Turkish', 'native' => 'Türkçe', 'locale' => 'tr_TR', 'dir' => 'ltr', 'og' => 'tr_TR'],
-        'ar' => ['name' => 'Arabic', 'native' => 'العربية', 'locale' => 'ar_SA', 'dir' => 'rtl', 'og' => 'ar_SA'],
     ];
 
     private static string $code = self::DEFAULT;
@@ -34,30 +26,22 @@ final class Lang
         $path = parse_url($uri, PHP_URL_PATH) ?: '/';
         $path = rawurldecode($path);
 
-        $detected = self::DEFAULT;
+        // Старые языковые префиксы → каноникал без префикса
         if (preg_match('#^/(en|ru|fa|zh|tr|ar)(/.*)?$#u', $path, $m)) {
-            $detected = $m[1];
             $rest = $m[2] ?? '/';
             if ($rest === '') {
                 $rest = '/';
             }
             $query = parse_url($uri, PHP_URL_QUERY);
-            $newUri = $rest . ($query ? ('?' . $query) : '');
-            $_SERVER['REQUEST_URI'] = $newUri;
-            $_SERVER['PROFLANDING_LANG'] = $detected;
-
-            // /ru и /ru/... → каноникал без префикса
-            if ($detected === self::DEFAULT) {
-                $target = $rest === '/' ? '/' : $rest;
-                if ($query) {
-                    $target .= '?' . $query;
-                }
-                redirect($target);
+            $target = $rest === '/' ? '/' : $rest;
+            if ($query) {
+                $target .= '?' . $query;
             }
+            redirect($target);
         }
 
-        self::$code = $detected;
-        self::loadFiles($root, $detected);
+        self::$code = self::DEFAULT;
+        self::loadFiles($root);
     }
 
     public static function code(): string
@@ -67,25 +51,22 @@ final class Lang
 
     public static function isRtl(): bool
     {
-        return (self::LOCALES[self::$code]['dir'] ?? 'ltr') === 'rtl';
+        return false;
     }
 
     public static function htmlLang(): string
     {
-        return match (self::$code) {
-            'zh' => 'zh-Hans',
-            default => self::$code,
-        };
+        return 'ru';
     }
 
     public static function ogLocale(): string
     {
-        return self::LOCALES[self::$code]['og'] ?? 'ru_RU';
+        return 'ru_RU';
     }
 
     public static function dir(): string
     {
-        return self::LOCALES[self::$code]['dir'] ?? 'ltr';
+        return 'ltr';
     }
 
     public static function get(string $key, ?string $default = null): string
@@ -129,28 +110,21 @@ final class Lang
     /** @return array<int, array{q:string,a:string}> */
     public static function faq(array $fallbackRu): array
     {
-        if (!empty(self::$content['faq']) && is_array(self::$content['faq'])) {
-            return self::$content['faq'];
-        }
         return $fallbackRu;
     }
 
     public static function prefix(): string
     {
-        return self::$code === self::DEFAULT ? '' : '/' . self::$code;
+        return '';
     }
 
     public static function url(string $path = '/'): string
     {
         $path = '/' . ltrim($path, '/');
         if ($path === '/') {
-            return self::prefix() === '' ? '/' : self::prefix() . '/';
+            return '/';
         }
-        // якоря
-        if (str_starts_with($path, '/#')) {
-            return (self::prefix() ?: '') . $path;
-        }
-        return self::prefix() . $path;
+        return $path;
     }
 
     public static function absoluteUrl(string $path = '/'): string
@@ -161,25 +135,14 @@ final class Lang
     /** @return list<string> */
     public static function codes(): array
     {
-        return array_keys(self::LOCALES);
+        return ['ru'];
     }
 
-    private static function loadFiles(string $root, string $code): void
+    private static function loadFiles(string $root): void
     {
         $uiRu = $root . '/lang/ru.php';
-        $ui = $root . '/lang/' . $code . '.php';
         $messages = is_file($uiRu) ? (require $uiRu) : [];
-        if ($code !== 'ru' && is_file($ui)) {
-            $messages = array_merge($messages, require $ui);
-        }
         self::$messages = is_array($messages) ? $messages : [];
-
-        $content = [];
-        $contentFile = $root . '/lang/content/' . $code . '.php';
-        if (is_file($contentFile)) {
-            $loaded = require $contentFile;
-            $content = is_array($loaded) ? $loaded : [];
-        }
-        self::$content = $content;
+        self::$content = [];
     }
 }

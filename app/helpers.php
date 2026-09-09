@@ -62,19 +62,7 @@ function period_label(string $period): string
 
 function brand_name(): string
 {
-    if (\App\Core\Lang::code() === 'ru') {
-        return setting('site_name', 'МеталлКомплект31');
-    }
-    $fromLang = \App\Core\Lang::content('site_name');
-    if ($fromLang !== '') {
-        return $fromLang;
-    }
-    static $cache = null;
-    if ($cache === null) {
-        $cache = \App\Models\Setting::all();
-    }
-    $latin = trim((string)($cache['site_name_latin'] ?? ''));
-    return $latin !== '' ? $latin : 'MetallKomplekt31';
+    return setting('site_name', 'МеталлКомплект31');
 }
 
 function setting(string $key, string $default = ''): string
@@ -84,27 +72,6 @@ function setting(string $key, string $default = ''): string
         $cache = \App\Models\Setting::all();
     }
 
-    $fromAdminOnly = [
-        'public_url', 'city', 'phone', 'email', 'telegram', 'whatsapp',
-        'experience_years', 'projects_count', 'response_hours',
-        'site_name', 'site_name_latin', 'yandex_metrika', 'google_analytics',
-        'usd_rate', 'usd_rate_updated_at', 'telegram_enabled', 'mail_enabled',
-        'notify_tpl_email_subject', 'avatar_path', 'og_image',
-        'work_format', 'response_sla', 'not_doing',
-        'telegram_bot_token', 'telegram_chat_id',
-        'telegram_proxy_enabled', 'telegram_proxy_type', 'telegram_proxy_host',
-        'telegram_proxy_port', 'telegram_proxy_user', 'telegram_proxy_pass',
-        'smtp_host', 'smtp_port', 'smtp_secure', 'smtp_user', 'smtp_pass',
-        'smtp_from', 'smtp_from_name', 'smtp_to',
-    ];
-
-    if (!in_array($key, $fromAdminOnly, true)) {
-        $translated = \App\Core\Lang::content($key);
-        if ($translated !== '') {
-            return $translated;
-        }
-    }
-
     return isset($cache[$key]) && $cache[$key] !== null && $cache[$key] !== ''
         ? (string)$cache[$key]
         : $default;
@@ -112,31 +79,17 @@ function setting(string $key, string $default = ''): string
 
 function service_field(array $service, string $field): string
 {
-    $slug = (string)($service['slug'] ?? '');
-    $fallback = (string)($service[$field] ?? '');
-    if ($slug === '') {
-        return $fallback;
-    }
-    $t = \App\Core\Lang::content('services.' . $slug . '.' . $field, '');
-    return $t !== '' ? $t : $fallback;
+    return (string)($service[$field] ?? '');
 }
 
 function package_field(array $package, string $field): string
 {
-    $titleRu = (string)($package['title'] ?? '');
-    $fallback = (string)($package[$field] ?? '');
-    $t = \App\Core\Lang::content('packages.' . $titleRu . '.' . $field, '');
-    return $t !== '' ? $t : $fallback;
+    return (string)($package[$field] ?? '');
 }
 
 /** @return list<string> */
 function package_features(array $package): array
 {
-    $titleRu = (string)($package['title'] ?? '');
-    $raw = \App\Core\Lang::contentArray('packages.' . $titleRu . '.features');
-    if (is_array($raw) && $raw !== []) {
-        return array_map('strval', $raw);
-    }
     return \App\Models\Package::featuresList($package['features'] ?? null);
 }
 

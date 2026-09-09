@@ -9,13 +9,11 @@ $pageDesc = $seo['description'] ?? setting('site_tagline');
 $ogTitle = $seo['og_title'] ?? $pageTitle;
 $ogDesc = $seo['og_description'] ?? $pageDesc;
 $ogImage = media_url($seo['og_image'] ?? setting('og_image') ?: setting('avatar_path'));
-$pathNoLang = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-$canonical = $seo['canonical'] ?? Lang::absoluteUrl($pathNoLang === '/' ? '/' : $pathNoLang);
+$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$canonical = $seo['canonical'] ?? Lang::absoluteUrl($path === '/' ? '/' : $path);
 $robots = $seo['robots'] ?? 'index,follow';
-$lang = Lang::code();
-$homePath = ($pathNoLang === '/' || $pathNoLang === '') ? '/' : $pathNoLang;
 ?><!DOCTYPE html>
-<html lang="<?= e(Lang::htmlLang()) ?>" dir="<?= e(Lang::dir()) ?>">
+<html lang="ru" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,18 +21,7 @@ $homePath = ($pathNoLang === '/' || $pathNoLang === '') ? '/' : $pathNoLang;
     <meta name="description" content="<?= e($pageDesc) ?>">
     <meta name="robots" content="<?= e($robots) ?>">
     <link rel="canonical" href="<?= e($canonical) ?>">
-    <?php foreach (Lang::codes() as $code):
-        if ($homePath === '/') {
-            $href = $code === Lang::DEFAULT ? app_url('/') : app_url($code . '/');
-        } else {
-            $href = $code === Lang::DEFAULT ? app_url(ltrim($homePath, '/')) : app_url($code . '/' . ltrim($homePath, '/'));
-        }
-        $hl = $code === 'zh' ? 'zh-Hans' : $code;
-    ?>
-    <link rel="alternate" hreflang="<?= e($hl) ?>" href="<?= e($href) ?>">
-    <?php endforeach; ?>
-    <link rel="alternate" hreflang="x-default" href="<?= e(app_url('/')) ?>">
-    <meta property="og:locale" content="<?= e(Lang::ogLocale()) ?>">
+    <meta property="og:locale" content="ru_RU">
     <meta property="og:type" content="website">
     <meta property="og:title" content="<?= e($ogTitle) ?>">
     <meta property="og:description" content="<?= e($ogDesc) ?>">
@@ -71,33 +58,11 @@ $homePath = ($pathNoLang === '/' || $pathNoLang === '') ? '/' : $pathNoLang;
             <a href="<?= e(lang_url('/#faq')) ?>"><?= e(__('nav_faq')) ?></a>
             <a href="<?= e(lang_url('/#lead')) ?>"><?= e(__('nav_contacts')) ?></a>
             <div class="nav-mobile-extra">
-                <div class="lang-switch" aria-label="<?= e(__('lang_label')) ?>">
-                    <?php foreach (Lang::LOCALES as $code => $meta):
-                        if ($pathNoLang !== '/' && $pathNoLang !== '') {
-                            $url = $code === Lang::DEFAULT ? $pathNoLang : '/' . $code . $pathNoLang;
-                        } else {
-                            $url = $code === Lang::DEFAULT ? '/' : '/' . $code . '/';
-                        }
-                    ?>
-                    <a class="lang-link<?= $code === $lang ? ' is-active' : '' ?>" href="<?= e($url) ?>" hreflang="<?= e($code === 'zh' ? 'zh-Hans' : $code) ?>"><?= e(strtoupper($code)) ?></a>
-                    <?php endforeach; ?>
-                </div>
                 <a class="btn btn-primary btn-sm nav-cta-mobile" href="<?= e(lang_url('/#lead')) ?>"><?= e(__('cta_lead')) ?></a>
             </div>
         </nav>
 
         <div class="header-actions">
-            <div class="lang-switch lang-desktop" aria-label="<?= e(__('lang_label')) ?>">
-                <?php foreach (Lang::LOCALES as $code => $meta):
-                    if ($pathNoLang !== '/' && $pathNoLang !== '') {
-                        $url = $code === Lang::DEFAULT ? $pathNoLang : '/' . $code . $pathNoLang;
-                    } else {
-                        $url = $code === Lang::DEFAULT ? '/' : '/' . $code . '/';
-                    }
-                ?>
-                <a class="lang-link<?= $code === $lang ? ' is-active' : '' ?>" href="<?= e($url) ?>" hreflang="<?= e($code === 'zh' ? 'zh-Hans' : $code) ?>"><?= e(strtoupper($code)) ?></a>
-                <?php endforeach; ?>
-            </div>
             <button type="button" class="theme-toggle" id="themeToggle" aria-label="<?= e(__('theme_toggle')) ?>">◐</button>
             <a class="btn btn-primary btn-sm header-cta-desktop" href="<?= e(lang_url('/#lead')) ?>"><?= e(__('cta_lead')) ?></a>
             <button type="button" class="nav-toggle" id="navToggle" aria-label="<?= e(__('menu')) ?>" aria-expanded="false" aria-controls="siteNav">☰</button>
