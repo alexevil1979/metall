@@ -18,6 +18,9 @@
                 <p><bdi dir="ltr"><?= e(brand_name()) ?></bdi><?php if (setting('city')): ?>, <?= e(setting('city')) ?><?php endif; ?></p>
                 <?php if (setting('email')): ?><p>Email: <a href="mailto:<?= e(setting('email')) ?>"><?= e(setting('email')) ?></a></p><?php endif; ?>
                 <?php if (setting('phone')): ?><p>Телефон: <a href="tel:<?= e(preg_replace('/[^\d+]/', '', setting('phone'))) ?>"><?= e(setting('phone')) ?></a></p><?php endif; ?>
+                <?php if (setting('telegram')): ?><p>TG канал: <a href="<?= e(setting('telegram')) ?>" target="_blank" rel="noopener"><?= e(setting('telegram')) ?></a></p><?php endif; ?>
+                <?php if (setting('vk')): ?><p>VK: <a href="<?= e(setting('vk')) ?>" target="_blank" rel="noopener"><?= e(setting('vk')) ?></a></p><?php endif; ?>
+                <?php if (setting('youtube')): ?><p>YouTube: <a href="<?= e(setting('youtube')) ?>" target="_blank" rel="noopener"><?= e(setting('youtube')) ?></a></p><?php endif; ?>
             </div>
         </article>
     </div>

@@ -84,6 +84,12 @@ $robots = $seo['robots'] ?? 'index,follow';
             <p><a href="tel:<?= e(preg_replace('/[^\d+]/', '', setting('phone'))) ?>"><?= e(setting('phone')) ?></a></p>
             <p><a href="mailto:<?= e(setting('email')) ?>"><?= e(setting('email')) ?></a></p>
             <p><?= e(setting('city')) ?></p>
+            <div class="footer-social">
+                <?php if (setting('telegram')): ?><a href="<?= e(setting('telegram')) ?>" target="_blank" rel="noopener">TG канал</a><?php endif; ?>
+                <?php if (setting('vk')): ?><a href="<?= e(setting('vk')) ?>" target="_blank" rel="noopener">VK</a><?php endif; ?>
+                <?php if (setting('youtube')): ?><a href="<?= e(setting('youtube')) ?>" target="_blank" rel="noopener">YouTube</a><?php endif; ?>
+                <?php if (setting('whatsapp')): ?><a href="<?= e(setting('whatsapp')) ?>" target="_blank" rel="noopener">WhatsApp</a><?php endif; ?>
+            </div>
         </div>
         <div class="footer-links">
             <a href="<?= e(lang_url('/privacy')) ?>"><?= e(__('footer_privacy')) ?></a>
@@ -93,10 +99,12 @@ $robots = $seo['robots'] ?? 'index,follow';
     <div class="container footer-copy">© <?= date('Y') ?> <bdi dir="ltr"><?= e(brand_name()) ?></bdi></div>
 </footer>
 
-<?php if (setting('telegram') || setting('whatsapp')): ?>
+<?php if (setting('telegram') || setting('whatsapp') || setting('vk') || setting('youtube')): ?>
 <div class="float-messengers" aria-label="<?= e(__('messengers')) ?>">
     <?php if (setting('whatsapp')): ?><a class="float-btn wa" href="<?= e(setting('whatsapp')) ?>" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a><?php endif; ?>
-    <?php if (setting('telegram')): ?><a class="float-btn tg" href="<?= e(setting('telegram')) ?>" target="_blank" rel="noopener" aria-label="Telegram">TG</a><?php endif; ?>
+    <?php if (setting('telegram')): ?><a class="float-btn tg" href="<?= e(setting('telegram')) ?>" target="_blank" rel="noopener" aria-label="Telegram-канал">TG</a><?php endif; ?>
+    <?php if (setting('vk')): ?><a class="float-btn vk" href="<?= e(setting('vk')) ?>" target="_blank" rel="noopener" aria-label="VK">VK</a><?php endif; ?>
+    <?php if (setting('youtube')): ?><a class="float-btn yt" href="<?= e(setting('youtube')) ?>" target="_blank" rel="noopener" aria-label="YouTube">YT</a><?php endif; ?>
 </div>
 <?php endif; ?>
 

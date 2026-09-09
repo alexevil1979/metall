@@ -14,8 +14,10 @@
     <label>OG image URL<input name="og_image" value="<?= e($s['og_image'] ?? '') ?>" placeholder="/uploads/... или https://"></label>
     <label>Телефон<input name="phone" value="<?= e($s['phone'] ?? '') ?>"></label>
     <label>Email<input name="email" value="<?= e($s['email'] ?? '') ?>"></label>
-    <label>Telegram URL<input name="telegram" value="<?= e($s['telegram'] ?? '') ?>"></label>
+    <label>Telegram-канал<input name="telegram" value="<?= e($s['telegram'] ?? '') ?>" placeholder="https://t.me/..."></label>
     <label>WhatsApp URL<input name="whatsapp" value="<?= e($s['whatsapp'] ?? '') ?>"></label>
+    <label>YouTube<input name="youtube" value="<?= e($s['youtube'] ?? '') ?>" placeholder="https://www.youtube.com/@..."></label>
+    <label>VK<input name="vk" value="<?= e($s['vk'] ?? '') ?>" placeholder="https://vk.ru/..."></label>
     <label>Город / локация<input name="city" value="<?= e($s['city'] ?? '') ?>"></label>
     <label>Лет опыта (например 25+)<input name="experience_years" value="<?= e($s['experience_years'] ?? '') ?>"></label>
     <label>Проектов<input name="projects_count" value="<?= e($s['projects_count'] ?? '') ?>"></label>

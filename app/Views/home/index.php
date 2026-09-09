@@ -331,9 +331,11 @@ foreach ($faq as $item) {
                 <p><?= e(__('lead_sub')) ?></p>
             </header>
             <div class="contact-chips">
-                <?php if (setting('telegram')): ?><a href="<?= e(setting('telegram')) ?>" target="_blank" rel="noopener">Telegram</a><?php endif; ?>
-                <?php if (setting('whatsapp')): ?><a href="<?= e(setting('whatsapp')) ?>" target="_blank" rel="noopener">WhatsApp</a><?php endif; ?>
                 <?php if (setting('phone')): ?><a href="tel:<?= e(preg_replace('/[^\d+]/', '', setting('phone'))) ?>"><?= e(setting('phone')) ?></a><?php endif; ?>
+                <?php if (setting('telegram')): ?><a href="<?= e(setting('telegram')) ?>" target="_blank" rel="noopener">TG канал</a><?php endif; ?>
+                <?php if (setting('vk')): ?><a href="<?= e(setting('vk')) ?>" target="_blank" rel="noopener">VK</a><?php endif; ?>
+                <?php if (setting('youtube')): ?><a href="<?= e(setting('youtube')) ?>" target="_blank" rel="noopener">YouTube</a><?php endif; ?>
+                <?php if (setting('whatsapp')): ?><a href="<?= e(setting('whatsapp')) ?>" target="_blank" rel="noopener">WhatsApp</a><?php endif; ?>
             </div>
         </div>
         <form class="lead-form reveal" id="leadForm" method="post" action="<?= e(lang_url('/lead')) ?>" novalidate>

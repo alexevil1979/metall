@@ -30,7 +30,7 @@ final class SettingsController
         Csrf::requireValid();
         $keys = [
             'public_url', 'site_name', 'site_name_latin', 'site_role', 'site_tagline', 'hero_offer', 'hero_sub',
-            'phone', 'email', 'telegram', 'whatsapp', 'city',
+            'phone', 'email', 'telegram', 'whatsapp', 'youtube', 'vk', 'city',
             'experience_years', 'projects_count', 'response_hours',
             'work_format', 'response_sla', 'not_doing',
             'yandex_metrika', 'google_analytics', 'faq_json', 'og_image',

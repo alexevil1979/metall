@@ -314,6 +314,7 @@ html[data-theme="dark"] .package-ribbon { color: #042f2e; }
 .footer-grid { display: grid; gap: 1.25rem; }
 .footer-links { display: flex; flex-direction: column; gap: .4rem; }
 .footer-copy { margin-top: 1.5rem; color: var(--muted); font-size: .9rem; }
+.footer-social { display: flex; flex-wrap: wrap; gap: .55rem .9rem; margin-top: .65rem; }
 
 .float-messengers {
   position: fixed; right: 1rem;
@@ -326,6 +327,8 @@ html[data-theme="dark"] .package-ribbon { color: #042f2e; }
 }
 .float-btn.wa { background: #128c7e; }
 .float-btn.tg { background: #229ed9; }
+.float-btn.vk { background: #0077ff; }
+.float-btn.yt { background: #c4302b; }
 
 .toast {
   position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
