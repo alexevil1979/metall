@@ -1,0 +1,11 @@
+# После certbot: /etc/apache2/sites-available/metall-le-ssl.conf
+# Проверьте, что на :443 тоже есть PHP-FPM handler и тот же DocumentRoot:
+#
+# DocumentRoot /ssd/www/metall/public
+# <Directory /ssd/www/metall/public>
+#     AllowOverride All
+#     Require all granted
+# </Directory>
+# <FilesMatch "\.php$">
+#     SetHandler "proxy:fcgi://127.0.0.1:9000"
+# </FilesMatch>
