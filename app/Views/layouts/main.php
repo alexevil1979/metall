@@ -44,7 +44,8 @@ $robots = $seo['robots'] ?? 'index,follow';
     <meta name="twitter:description" content="<?= e($ogDesc) ?>">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="apple-touch-icon" href="<?= e($logoSrc) ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="stylesheet" href="/assets/css/main.css">
     <?php if (!empty($settings['yandex_metrika'])): ?>
     <?= $settings['yandex_metrika'] ?>
