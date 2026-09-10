@@ -57,24 +57,52 @@ function brand_name(): string
 
 function setting(string $key, string $default = ''): string
 {
-    static $cache = null;
-    if ($cache === null) {
-        $cache = \App\Models\Setting::all();
+    if (!isset($GLOBALS['__settings_cache']) || !is_array($GLOBALS['__settings_cache'])) {
+        $GLOBALS['__settings_cache'] = \App\Models\Setting::all();
     }
+    $cache = $GLOBALS['__settings_cache'];
 
     return isset($cache[$key]) && $cache[$key] !== null && $cache[$key] !== ''
         ? (string)$cache[$key]
         : $default;
 }
 
-/** Текст лендинга из settings с fallback на lang/ru.php */
+function setting_cache_flush(): void
+{
+    unset($GLOBALS['__settings_cache']);
+}
+
+/** Текст лендинга из settings с fallback на lang и ContentDefaults */
 function site_copy(string $key, ?string $langKey = null): string
 {
     $v = setting($key, '');
     if ($v !== '') {
         return $v;
     }
-    return __($langKey ?? $key);
+    $lookup = $langKey ?? $key;
+    $lang = __($lookup);
+    if ($lang !== '' && $lang !== $lookup) {
+        return $lang;
+    }
+    $def = \App\Services\ContentDefaults::get($key, '');
+    return $def !== '' ? $def : $lang;
+}
+
+/** Значение для поля админки: БД → дефолт контента → lang */
+function admin_copy(string $key, string $fallback = ''): string
+{
+    $v = setting($key, '');
+    if ($v !== '') {
+        return $v;
+    }
+    $def = \App\Services\ContentDefaults::get($key, '');
+    if ($def !== '') {
+        return $def;
+    }
+    if ($fallback !== '') {
+        return $fallback;
+    }
+    return site_copy($key);
 }
 
 /** @return list<mixed> */

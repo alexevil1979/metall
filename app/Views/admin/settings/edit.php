@@ -9,8 +9,18 @@
 /** @var list<string> $stack */
 /** @var list<string> $gallery_files */
 use App\Core\Csrf;
+use App\Services\ContentDefaults;
 $s = $settings;
-$v = static fn(string $k, string $d = '') => e($s[$k] ?? $d);
+$v = static function (string $k, string $d = '') use ($s): string {
+    $raw = trim((string)($s[$k] ?? ''));
+    if ($raw !== '' && $raw !== '[]') {
+        return e($raw);
+    }
+    if ($d !== '') {
+        return e($d);
+    }
+    return e(ContentDefaults::get($k, admin_copy($k)));
+};
 $trust = $trust ?? [''];
 $steps = $steps ?? [['t' => '', 'd' => '']];
 $gallery = $gallery ?? [['file' => '', 'title' => '', 'url' => '']];
@@ -300,12 +310,12 @@ if ($stack === []) {
                 </template>
 
             <?php elseif ($section === 'legal'): ?>
-                <p class="panel-lead">Если поле пустое — на сайте показывается стандартный шаблон.</p>
-                <label>Политика конфиденциальности<textarea name="privacy_text" rows="12" placeholder="Оставьте пустым для шаблона по умолчанию"><?= $v('privacy_text') ?></textarea></label>
-                <label>Публичная оферта<textarea name="offer_text" rows="12" placeholder="Оставьте пустым для шаблона по умолчанию"><?= $v('offer_text') ?></textarea></label>
+                <p class="panel-lead">Тексты страниц «Политика» и «Оферта». Если очистить поле и сохранить пустым — на сайте снова покажется встроенный шаблон.</p>
+                <label>Политика конфиденциальности<textarea name="privacy_text" rows="14"><?= $v('privacy_text') ?></textarea></label>
+                <label>Публичная оферта<textarea name="offer_text" rows="14"><?= $v('offer_text') ?></textarea></label>
 
             <?php elseif ($section === 'analytics'): ?>
-                <p class="panel-lead">Вставьте готовый код счётчика — он появится в &lt;head&gt; сайта.</p>
+                <p class="panel-lead">Счётчики необязательны. Вставьте готовый код — он появится в &lt;head&gt; сайта. Пустые поля — норма.</p>
                 <label>Яндекс.Метрика<textarea name="yandex_metrika" rows="8" placeholder="<script>...</script>"><?= $v('yandex_metrika') ?></textarea></label>
                 <label>Google Analytics<textarea name="google_analytics" rows="8" placeholder="<script>...</script>"><?= $v('google_analytics') ?></textarea></label>
             <?php endif; ?>

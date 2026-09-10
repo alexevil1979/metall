@@ -95,10 +95,9 @@ URL: `https://metall.1tlt.ru/admin/login`
 ```bash
 cd /ssd/www/metall
 git pull
-mysql -u root -p metall < database/migrate_fill_gallery.sql
 ```
 
-`migrate_fill_gallery.sql` заполняет видео/шаги/буллеты только если в БД они пустые — уже сохранённый контент не затирает.
+После обновления откройте `/admin/settings` — пустые разделы контента заполнятся автоматически текстами с сайта (уже сохранённые поля не затираются).
 
 ## Контент из прайса
 

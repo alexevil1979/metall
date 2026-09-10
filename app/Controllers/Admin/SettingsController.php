@@ -9,6 +9,7 @@ use App\Core\Csrf;
 use App\Core\Request;
 use App\Core\View;
 use App\Models\Setting;
+use App\Services\ContentDefaults;
 
 final class SettingsController
 {
@@ -77,7 +78,13 @@ final class SettingsController
     {
         Auth::requireLogin();
         $section = $this->resolveSection((string)Request::input('section', 'brand'));
-        $settings = Setting::all();
+
+        $filled = ContentDefaults::ensureMissing();
+        if ($filled > 0) {
+            flash('ok', 'Контент разделов заполнен текстами с сайта (' . $filled . ' полей). Можно править и сохранять.');
+        }
+
+        $settings = ContentDefaults::mergeForForm(Setting::all());
         $lists = $this->viewData($settings);
 
         View::render('admin/settings/edit', [
