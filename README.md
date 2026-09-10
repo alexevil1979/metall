@@ -90,6 +90,16 @@ URL: `https://metall.1tlt.ru/admin/login`
 
 **Сразу смените пароль** в разделе «Пароль».
 
+## Обновление на VPS
+
+```bash
+cd /ssd/www/metall
+git pull
+mysql -u root -p metall < database/migrate_fill_gallery.sql
+```
+
+`migrate_fill_gallery.sql` заполняет видео/шаги/буллеты только если в БД они пустые — уже сохранённый контент не затирает.
+
 ## Контент из прайса
 
 Seed заполнен по КП «МеталлКомплект31»:

@@ -288,10 +288,7 @@ foreach ($faq as $item) {
         <?php if ($gallery): ?>
         <div class="gallery-grid">
             <?php foreach ($gallery as $item):
-                $img = (string)($item['image'] ?? '');
-                if ($img === '' && !empty($item['file'])) {
-                    $img = '/assets/img/gallery/' . ltrim((string)$item['file'], '/');
-                }
+                $img = gallery_thumb_url($item);
             ?>
             <a class="gallery-card reveal" href="<?= e($item['url'] ?? '#') ?>" target="_blank" rel="noopener">
                 <img src="<?= e($img) ?>" width="360" height="560" alt="<?= e($item['title'] ?? '') ?>" loading="lazy" decoding="async">

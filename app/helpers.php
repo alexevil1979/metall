@@ -106,6 +106,143 @@ function setting_lines(string $key, array $default = []): array
     return $out !== [] ? $out : $default;
 }
 
+/** @return list<array<string, mixed>> */
+function gallery_manifest(): array
+{
+    $path = dirname(__DIR__) . '/public/assets/img/gallery/manifest.json';
+    if (!is_file($path)) {
+        return [];
+    }
+    $data = json_decode((string)file_get_contents($path), true);
+    return is_array($data) ? array_values($data) : [];
+}
+
+/**
+ * Видео для главной и админки: settings.gallery_json, иначе manifest.json.
+ * @return list<array<string, mixed>>
+ */
+function gallery_items(): array
+{
+    $fromDb = setting_json('gallery_json', []);
+    if ($fromDb !== []) {
+        return array_values($fromDb);
+    }
+    return gallery_manifest();
+}
+
+/** URL превью ролика из file / image */
+function gallery_thumb_url(array $item): string
+{
+    $image = trim((string)($item['image'] ?? ''));
+    if ($image !== '') {
+        if (str_starts_with($image, 'http://') || str_starts_with($image, 'https://') || str_starts_with($image, '/')) {
+            return $image;
+        }
+        return '/assets/img/gallery/' . ltrim($image, '/');
+    }
+    $file = trim((string)($item['file'] ?? ''));
+    if ($file === '') {
+        return '';
+    }
+    if (str_starts_with($file, 'http://') || str_starts_with($file, 'https://') || str_starts_with($file, '/')) {
+        return $file;
+    }
+    return '/assets/img/gallery/' . ltrim($file, '/');
+}
+
+/** @return list<string> */
+function content_trust_bullets(): array
+{
+    $items = setting_json('trust_bullets_json', []);
+    if ($items !== []) {
+        return array_values(array_map('strval', $items));
+    }
+    return [
+        __('trust_1'),
+        __('trust_2'),
+        __('trust_3'),
+    ];
+}
+
+/** @return list<array{t:string,d:string}> */
+function content_process_steps(): array
+{
+    $items = setting_json('process_steps_json', []);
+    if ($items !== []) {
+        $out = [];
+        foreach ($items as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $out[] = [
+                't' => (string)($row['t'] ?? ''),
+                'd' => (string)($row['d'] ?? ''),
+            ];
+        }
+        return $out !== [] ? $out : content_process_steps_defaults();
+    }
+    return content_process_steps_defaults();
+}
+
+/** @return list<array{t:string,d:string}> */
+function content_process_steps_defaults(): array
+{
+    return [
+        ['t' => __('step1_t'), 'd' => __('step1_d')],
+        ['t' => __('step2_t'), 'd' => __('step2_d')],
+        ['t' => __('step3_t'), 'd' => __('step3_d')],
+        ['t' => __('step4_t'), 'd' => __('step4_d')],
+    ];
+}
+
+/** @return list<string> */
+function content_stack_items(): array
+{
+    return setting_lines('stack_items', [
+        'Болтовое соединение',
+        'Сборно-разборный каркас',
+        'Быстрый монтаж',
+        'Любой фундамент',
+        'Нагрузка до 200 кг/м²',
+        'Шаг арок 3 м',
+        'Краб-система',
+        'Доставка по РФ',
+    ]);
+}
+
+/** @return list<array{q:string,a:string}> */
+function content_faq_items(): array
+{
+    $items = setting_json('faq_json', []);
+    if ($items !== []) {
+        $out = [];
+        foreach ($items as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $out[] = [
+                'q' => (string)($row['q'] ?? ''),
+                'a' => (string)($row['a'] ?? ''),
+            ];
+        }
+        return $out !== [] ? $out : content_faq_defaults();
+    }
+    return content_faq_defaults();
+}
+
+/** @return list<array{q:string,a:string}> */
+function content_faq_defaults(): array
+{
+    return [
+        ['q' => 'Что входит в комплект арки?', 'a' => 'Каркас арки и крепёж: болты, шайбы, гайки. Обшивку и фундамент подбираете отдельно или обсуждаем комплектацию.'],
+        ['q' => 'Какой фундамент нужен?', 'a' => 'Можно ставить на обвязку, спецблоки, плиту, заливные или винтовые сваи. Капитальный фундамент для стандартных арок не обязателен.'],
+        ['q' => 'С какой нагрузкой рассчитаны арки?', 'a' => 'В зависимости от серии — ориентировочно 180–200 кг/м². Точные параметры уточняем по выбранной ширине.'],
+        ['q' => 'Какой шаг установки арок?', 'a' => 'Типовой шаг — 3 метра. Длину объекта набираете нужным количеством секций.'],
+        ['q' => 'Доставляете по России?', 'a' => 'Да, выгодная доставка по РФ. Стоимость и сроки считаем по адресу и объёму заказа.'],
+        ['q' => 'Сложно ли собрать каркас?', 'a' => 'Конструкция сборно-разборная на болтовом соединении — быстрое и простое возведение без сварки на объекте.'],
+    ];
+}
+
 function service_field(array $service, string $field): string
 {
     return (string)($service[$field] ?? '');

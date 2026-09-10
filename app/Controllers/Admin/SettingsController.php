@@ -156,45 +156,14 @@ final class SettingsController
     /** @param array<string,string> $settings */
     private function viewData(array $settings): array
     {
-        $trust = json_decode($settings['trust_bullets_json'] ?? '[]', true);
-        if (!is_array($trust) || $trust === []) {
-            $trust = [
-                'Болтовое соединение — монтаж без сварки на объекте',
-                'Сборно-разборный каркас, быстрое возведение',
-                'Выгодная доставка по всей России',
-            ];
-        }
-        $steps = json_decode($settings['process_steps_json'] ?? '[]', true);
-        if (!is_array($steps) || $steps === []) {
-            $steps = [
-                ['t' => 'Заявка', 'd' => 'Укажите ширину/длину объекта и назначение: гараж, ангар, склад, навес.'],
-                ['t' => 'Подбор', 'd' => 'Подберём серию арок или каркас, фундамент и состав комплекта.'],
-                ['t' => 'Отгрузка', 'd' => 'Комплектуем крепёж и отправляем доставку по вашему адресу.'],
-                ['t' => 'Монтаж', 'd' => 'Собираете каркас на болтах — быстро и без сварки на площадке.'],
-            ];
-        }
-        $gallery = json_decode($settings['gallery_json'] ?? '[]', true);
-        if (!is_array($gallery)) {
-            $gallery = [];
-        }
-        $faq = json_decode($settings['faq_json'] ?? '[]', true);
-        if (!is_array($faq)) {
-            $faq = [];
-        }
-        $stackRaw = (string)($settings['stack_items'] ?? '');
-        $stack = $stackRaw !== ''
-            ? array_values(array_filter(array_map('trim', preg_split('/\R/u', $stackRaw) ?: [])))
-            : [
-                'Болтовое соединение', 'Сборно-разборный каркас', 'Быстрый монтаж', 'Любой фундамент',
-                'Нагрузка до 200 кг/м²', 'Шаг арок 3 м', 'Краб-система', 'Доставка по РФ',
-            ];
-
+        unset($settings);
+        // Те же источники, что и на публичной главной (включая fallback на manifest/lang).
         return [
-            'trust' => array_values($trust),
-            'steps' => array_values($steps),
-            'gallery' => array_values($gallery),
-            'faq' => array_values($faq),
-            'stack' => $stack,
+            'trust' => content_trust_bullets(),
+            'steps' => content_process_steps(),
+            'gallery' => gallery_items(),
+            'faq' => content_faq_items(),
+            'stack' => content_stack_items(),
         ];
     }
 
@@ -239,7 +208,7 @@ final class SettingsController
         return $out;
     }
 
-    /** @return list<array{file:string,title:string,url:string}> */
+    /** @return list<array<string, string>> */
     private function galleryFromRequest(): array
     {
         $files = Request::input('gallery_file', []);
@@ -266,13 +235,31 @@ final class SettingsController
             $item = ['title' => $title, 'url' => $url];
             if (str_starts_with($file, 'http://') || str_starts_with($file, 'https://') || str_starts_with($file, '/')) {
                 $item['image'] = $file;
-                $item['file'] = basename(parse_url($file, PHP_URL_PATH) ?: $file);
+                $item['file'] = basename((string)(parse_url($file, PHP_URL_PATH) ?: $file));
             } else {
                 $item['file'] = $file;
+            }
+            $id = $this->youtubeIdFromUrl($url);
+            if ($id === '' && preg_match('/-([A-Za-z0-9_-]{6,})\.(jpe?g|png|webp)$/i', $item['file'], $m)) {
+                $id = $m[1];
+            }
+            if ($id !== '') {
+                $item['id'] = $id;
             }
             $out[] = $item;
         }
         return $out;
+    }
+
+    private function youtubeIdFromUrl(string $url): string
+    {
+        if ($url === '') {
+            return '';
+        }
+        if (preg_match('~(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/shorts/)([A-Za-z0-9_-]{6,})~', $url, $m)) {
+            return $m[1];
+        }
+        return '';
     }
 
     /** @return list<array{q:string,a:string}> */

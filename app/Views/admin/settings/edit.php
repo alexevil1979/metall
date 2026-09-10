@@ -197,36 +197,54 @@ if ($stack === []) {
                 </template>
 
             <?php elseif ($section === 'gallery'): ?>
-                <p class="panel-lead">Видео на главной. Файл — имя из <code>/assets/img/gallery/</code> или полный URL картинки.</p>
+                <p class="panel-lead">Видео на главной. Если в базе пусто — подставляются ролики из <code>/assets/img/gallery/manifest.json</code>. Файл превью — имя из папки gallery или полный URL.</p>
                 <div class="repeat-list" data-repeat="gallery">
                     <?php foreach ($gallery as $i => $item):
-                        $file = (string)($item['file'] ?? $item['image'] ?? '');
+                        $file = (string)($item['file'] ?? '');
+                        if ($file === '' && !empty($item['image'])) {
+                            $file = (string)$item['image'];
+                        }
+                        $thumb = gallery_thumb_url(is_array($item) ? $item : []);
                     ?>
-                    <div class="repeat-card">
+                    <div class="repeat-card gallery-card-admin">
                         <div class="repeat-card-head">
                             <strong>Видео <?= (int)$i + 1 ?></strong>
                             <button type="button" class="btn-icon js-remove-row" title="Удалить" aria-label="Удалить">×</button>
                         </div>
-                        <div class="form-two">
-                            <label>Заголовок<input name="gallery_title[]" value="<?= e((string)($item['title'] ?? '')) ?>"></label>
-                            <label>Ссылка на YouTube<input name="gallery_url[]" value="<?= e((string)($item['url'] ?? '')) ?>" placeholder="https://www.youtube.com/watch?v=..."></label>
+                        <div class="gallery-edit-row">
+                            <?php if ($thumb !== ''): ?>
+                            <img class="gallery-thumb" src="<?= e($thumb) ?>" alt="" width="120" height="68" loading="lazy">
+                            <?php else: ?>
+                            <div class="gallery-thumb gallery-thumb-empty" aria-hidden="true"></div>
+                            <?php endif; ?>
+                            <div class="gallery-edit-fields">
+                                <div class="form-two">
+                                    <label>Заголовок<input name="gallery_title[]" value="<?= e((string)($item['title'] ?? '')) ?>"></label>
+                                    <label>Ссылка на YouTube<input name="gallery_url[]" value="<?= e((string)($item['url'] ?? '')) ?>" placeholder="https://www.youtube.com/watch?v=..."></label>
+                                </div>
+                                <label>Файл превью / URL<input name="gallery_file[]" value="<?= e($file) ?>" placeholder="1-xxxxx.jpg"></label>
+                            </div>
                         </div>
-                        <label>Файл превью / URL<input name="gallery_file[]" value="<?= e($file) ?>" placeholder="1-xxxxx.jpg"></label>
                     </div>
                     <?php endforeach; ?>
                 </div>
                 <button type="button" class="btn btn-ghost js-add-row" data-target="gallery">+ Добавить видео</button>
                 <template id="tpl-gallery">
-                    <div class="repeat-card">
+                    <div class="repeat-card gallery-card-admin">
                         <div class="repeat-card-head">
                             <strong>Новое видео</strong>
                             <button type="button" class="btn-icon js-remove-row" title="Удалить" aria-label="Удалить">×</button>
                         </div>
-                        <div class="form-two">
-                            <label>Заголовок<input name="gallery_title[]" value=""></label>
-                            <label>Ссылка на YouTube<input name="gallery_url[]" value="" placeholder="https://www.youtube.com/watch?v=..."></label>
+                        <div class="gallery-edit-row">
+                            <div class="gallery-thumb gallery-thumb-empty" aria-hidden="true"></div>
+                            <div class="gallery-edit-fields">
+                                <div class="form-two">
+                                    <label>Заголовок<input name="gallery_title[]" value=""></label>
+                                    <label>Ссылка на YouTube<input name="gallery_url[]" value="" placeholder="https://www.youtube.com/watch?v=..."></label>
+                                </div>
+                                <label>Файл превью / URL<input name="gallery_file[]" value="" placeholder="1-xxxxx.jpg"></label>
+                            </div>
                         </div>
-                        <label>Файл превью / URL<input name="gallery_file[]" value="" placeholder="1-xxxxx.jpg"></label>
                     </div>
                 </template>
 
