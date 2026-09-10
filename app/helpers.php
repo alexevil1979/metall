@@ -119,15 +119,55 @@ function gallery_manifest(): array
 
 /**
  * Видео для главной и админки: settings.gallery_json, иначе manifest.json.
+ * Пустые/битые записи в БД игнорируются — тогда берётся манифест.
  * @return list<array<string, mixed>>
  */
 function gallery_items(): array
 {
     $fromDb = setting_json('gallery_json', []);
-    if ($fromDb !== []) {
-        return array_values($fromDb);
+    $clean = [];
+    foreach ($fromDb as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $file = trim((string)($item['file'] ?? ''));
+        $image = trim((string)($item['image'] ?? ''));
+        $title = trim((string)($item['title'] ?? ''));
+        $url = trim((string)($item['url'] ?? ''));
+        if ($file === '' && $image === '' && $title === '' && $url === '') {
+            continue;
+        }
+        // Заглушка из placeholder админки — не считаем валидной записью
+        if ($file === '1-xxxxx.jpg' && $title === '' && $url === '') {
+            continue;
+        }
+        $clean[] = $item;
+    }
+    if ($clean !== []) {
+        return array_values($clean);
     }
     return gallery_manifest();
+}
+
+/** @return list<string> имена jpg/png/webp в папке gallery */
+function gallery_available_files(): array
+{
+    $dir = dirname(__DIR__) . '/public/assets/img/gallery';
+    if (!is_dir($dir)) {
+        return [];
+    }
+    $out = [];
+    foreach (scandir($dir) ?: [] as $name) {
+        if ($name === '.' || $name === '..') {
+            continue;
+        }
+        if (!preg_match('/\.(jpe?g|png|webp)$/i', $name)) {
+            continue;
+        }
+        $out[] = $name;
+    }
+    sort($out, SORT_NATURAL | SORT_FLAG_CASE);
+    return $out;
 }
 
 /** URL превью ролика из file / image */

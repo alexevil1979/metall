@@ -1,16 +1,22 @@
 <?php
 /** @var array $settings */
 /** @var array $sections */
-/** @var array $data */
 /** @var string $section */
+/** @var list<string> $trust */
+/** @var list<array{t?:string,d?:string}> $steps */
+/** @var list<array<string,mixed>> $gallery */
+/** @var list<array{q?:string,a?:string}> $faq */
+/** @var list<string> $stack */
+/** @var list<string> $gallery_files */
 use App\Core\Csrf;
 $s = $settings;
 $v = static fn(string $k, string $d = '') => e($s[$k] ?? $d);
-$trust = $data['trust'] ?? [''];
-$steps = $data['steps'] ?? [['t' => '', 'd' => '']];
-$gallery = $data['gallery'] ?? [['file' => '', 'title' => '', 'url' => '']];
-$faq = $data['faq'] ?? [['q' => '', 'a' => '']];
-$stack = $data['stack'] ?? [''];
+$trust = $trust ?? [''];
+$steps = $steps ?? [['t' => '', 'd' => '']];
+$gallery = $gallery ?? [['file' => '', 'title' => '', 'url' => '']];
+$faq = $faq ?? [['q' => '', 'a' => '']];
+$stack = $stack ?? [''];
+$gallery_files = $gallery_files ?? gallery_available_files();
 if ($trust === []) {
     $trust = [''];
 }
@@ -197,12 +203,16 @@ if ($stack === []) {
                 </template>
 
             <?php elseif ($section === 'gallery'): ?>
-                <p class="panel-lead">Видео на главной. Если в базе пусто — подставляются ролики из <code>/assets/img/gallery/manifest.json</code>. Файл превью — имя из папки gallery или полный URL.</p>
+                <p class="panel-lead">Ролики блока «Видео с производства» на главной. Выберите превью из загруженных файлов или вставьте ссылку YouTube — заголовок можно править вручную.</p>
                 <div class="repeat-list" data-repeat="gallery">
                     <?php foreach ($gallery as $i => $item):
                         $file = (string)($item['file'] ?? '');
                         if ($file === '' && !empty($item['image'])) {
                             $file = (string)$item['image'];
+                        }
+                        $fileName = $file;
+                        if (str_contains($fileName, '/')) {
+                            $fileName = basename(parse_url($fileName, PHP_URL_PATH) ?: $fileName);
                         }
                         $thumb = gallery_thumb_url(is_array($item) ? $item : []);
                     ?>
@@ -212,17 +222,24 @@ if ($stack === []) {
                             <button type="button" class="btn-icon js-remove-row" title="Удалить" aria-label="Удалить">×</button>
                         </div>
                         <div class="gallery-edit-row">
-                            <?php if ($thumb !== ''): ?>
-                            <img class="gallery-thumb" src="<?= e($thumb) ?>" alt="" width="120" height="68" loading="lazy">
-                            <?php else: ?>
-                            <div class="gallery-thumb gallery-thumb-empty" aria-hidden="true"></div>
-                            <?php endif; ?>
+                            <img class="gallery-thumb js-gallery-thumb" src="<?= $thumb !== '' ? e($thumb) : '' ?>" alt="" width="120" height="68" loading="lazy"<?= $thumb === '' ? ' hidden' : '' ?>>
+                            <div class="gallery-thumb gallery-thumb-empty js-gallery-thumb-empty"<?= $thumb !== '' ? ' hidden' : '' ?> aria-hidden="true"></div>
                             <div class="gallery-edit-fields">
                                 <div class="form-two">
                                     <label>Заголовок<input name="gallery_title[]" value="<?= e((string)($item['title'] ?? '')) ?>"></label>
-                                    <label>Ссылка на YouTube<input name="gallery_url[]" value="<?= e((string)($item['url'] ?? '')) ?>" placeholder="https://www.youtube.com/watch?v=..."></label>
+                                    <label>Ссылка на YouTube<input class="js-gallery-url" name="gallery_url[]" value="<?= e((string)($item['url'] ?? '')) ?>" placeholder="https://www.youtube.com/watch?v=..."></label>
                                 </div>
-                                <label>Файл превью / URL<input name="gallery_file[]" value="<?= e($file) ?>" placeholder="1-xxxxx.jpg"></label>
+                                <label>Превью
+                                    <select class="js-gallery-file" name="gallery_file[]">
+                                        <option value="">— выберите файл —</option>
+                                        <?php foreach ($gallery_files as $gf): ?>
+                                        <option value="<?= e($gf) ?>"<?= $fileName === $gf ? ' selected' : '' ?>><?= e($gf) ?></option>
+                                        <?php endforeach; ?>
+                                        <?php if ($fileName !== '' && !in_array($fileName, $gallery_files, true)): ?>
+                                        <option value="<?= e($fileName) ?>" selected><?= e($fileName) ?> (текущий)</option>
+                                        <?php endif; ?>
+                                    </select>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -236,13 +253,21 @@ if ($stack === []) {
                             <button type="button" class="btn-icon js-remove-row" title="Удалить" aria-label="Удалить">×</button>
                         </div>
                         <div class="gallery-edit-row">
-                            <div class="gallery-thumb gallery-thumb-empty" aria-hidden="true"></div>
+                            <img class="gallery-thumb js-gallery-thumb" src="" alt="" width="120" height="68" hidden>
+                            <div class="gallery-thumb gallery-thumb-empty js-gallery-thumb-empty" aria-hidden="true"></div>
                             <div class="gallery-edit-fields">
                                 <div class="form-two">
                                     <label>Заголовок<input name="gallery_title[]" value=""></label>
-                                    <label>Ссылка на YouTube<input name="gallery_url[]" value="" placeholder="https://www.youtube.com/watch?v=..."></label>
+                                    <label>Ссылка на YouTube<input class="js-gallery-url" name="gallery_url[]" value="" placeholder="https://www.youtube.com/watch?v=..."></label>
                                 </div>
-                                <label>Файл превью / URL<input name="gallery_file[]" value="" placeholder="1-xxxxx.jpg"></label>
+                                <label>Превью
+                                    <select class="js-gallery-file" name="gallery_file[]">
+                                        <option value="">— выберите файл —</option>
+                                        <?php foreach ($gallery_files as $gf): ?>
+                                        <option value="<?= e($gf) ?>"><?= e($gf) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </label>
                             </div>
                         </div>
                     </div>

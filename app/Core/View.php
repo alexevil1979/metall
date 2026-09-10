@@ -16,13 +16,14 @@ final class View
         echo $content;
     }
 
-    public static function fetch(string $template, array $data = []): string
+    public static function fetch(string $template, array $vars = []): string
     {
         $path = dirname(__DIR__) . '/Views/' . str_replace('.', '/', $template) . '.php';
         if (!is_file($path)) {
             throw new \RuntimeException('Шаблон не найден: ' . $template);
         }
-        extract($data, EXTR_SKIP);
+        // Важно: параметр не должен называться $data — иначе EXTR_SKIP не извлекает ключ 'data'.
+        extract($vars, EXTR_SKIP);
         ob_start();
         require $path;
         return (string)ob_get_clean();

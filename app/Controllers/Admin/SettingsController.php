@@ -78,13 +78,19 @@ final class SettingsController
         Auth::requireLogin();
         $section = $this->resolveSection((string)Request::input('section', 'brand'));
         $settings = Setting::all();
+        $lists = $this->viewData($settings);
 
         View::render('admin/settings/edit', [
             'title' => 'Контент · ' . self::SECTIONS[$section]['title'],
             'section' => $section,
             'sections' => self::SECTIONS,
             'settings' => $settings,
-            'data' => $this->viewData($settings),
+            'trust' => $lists['trust'],
+            'steps' => $lists['steps'],
+            'gallery' => $lists['gallery'],
+            'faq' => $lists['faq'],
+            'stack' => $lists['stack'],
+            'gallery_files' => gallery_available_files(),
             'flash_ok' => flash('ok'),
             'flash_error' => flash('error'),
             'nav_active' => 'settings',
