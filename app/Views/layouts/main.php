@@ -8,10 +8,14 @@ $pageTitle = $seo['title'] ?? (brand_name() . ' — ' . setting('site_role'));
 $pageDesc = $seo['description'] ?? setting('site_tagline');
 $ogTitle = $seo['og_title'] ?? $pageTitle;
 $ogDesc = $seo['og_description'] ?? $pageDesc;
-$ogImage = media_url($seo['og_image'] ?? setting('og_image') ?: setting('avatar_path') ?: '/assets/img/channel-avatar.jpg');
+$logoPath = setting('avatar_path', '/assets/img/channel-avatar.jpg');
+$ogImage = media_url($seo['og_image'] ?? setting('og_image') ?: $logoPath);
 if ($ogImage === '' || !str_contains($ogImage, 'http')) {
     $ogImage = app_url(ltrim($ogImage ?: 'assets/img/channel-avatar.jpg', '/'));
 }
+$logoSrc = (str_starts_with($logoPath, 'http') || str_starts_with($logoPath, '/'))
+    ? $logoPath
+    : media_url($logoPath);
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $canonical = $seo['canonical'] ?? Lang::absoluteUrl($path === '/' ? '/' : $path);
 $robots = $seo['robots'] ?? 'index,follow';
@@ -40,10 +44,13 @@ $robots = $seo['robots'] ?? 'index,follow';
     <meta name="twitter:description" content="<?= e($ogDesc) ?>">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="apple-touch-icon" href="/assets/img/channel-avatar.jpg">
+    <link rel="apple-touch-icon" href="<?= e($logoSrc) ?>">
     <link rel="stylesheet" href="/assets/css/main.css">
     <?php if (!empty($settings['yandex_metrika'])): ?>
     <?= $settings['yandex_metrika'] ?>
+    <?php endif; ?>
+    <?php if (!empty($settings['google_analytics'])): ?>
+    <?= $settings['google_analytics'] ?>
     <?php endif; ?>
 </head>
 <body>
@@ -52,7 +59,7 @@ $robots = $seo['robots'] ?? 'index,follow';
     <div class="container header-inner">
         <a class="brand" href="<?= e(lang_url('/')) ?>">
             <span class="brand-mark" aria-hidden="true">
-                <img src="/assets/img/channel-avatar.jpg" width="42" height="42" alt="">
+                <img src="<?= e($logoSrc) ?>" width="42" height="42" alt="">
             </span>
             <span class="brand-text">
                 <strong><bdi dir="ltr"><?= e(brand_name()) ?></bdi></strong>
@@ -61,20 +68,20 @@ $robots = $seo['robots'] ?? 'index,follow';
         </a>
 
         <nav class="nav" id="siteNav" aria-label="<?= e(__('nav_aria')) ?>">
-            <a href="<?= e(lang_url('/#services')) ?>"><?= e(__('nav_services')) ?></a>
-            <a href="<?= e(lang_url('/#packages')) ?>"><?= e(__('nav_packages')) ?></a>
-            <a href="<?= e(lang_url('/#gallery')) ?>"><?= e(__('nav_gallery')) ?></a>
-            <a href="<?= e(lang_url('/#process')) ?>"><?= e(__('nav_process')) ?></a>
-            <a href="<?= e(lang_url('/#faq')) ?>"><?= e(__('nav_faq')) ?></a>
-            <a href="<?= e(lang_url('/#lead')) ?>"><?= e(__('nav_contacts')) ?></a>
+            <a href="<?= e(lang_url('/#services')) ?>"><?= e(site_copy('nav_services')) ?></a>
+            <a href="<?= e(lang_url('/#packages')) ?>"><?= e(site_copy('nav_packages')) ?></a>
+            <a href="<?= e(lang_url('/#gallery')) ?>"><?= e(site_copy('nav_gallery')) ?></a>
+            <a href="<?= e(lang_url('/#process')) ?>"><?= e(site_copy('nav_process')) ?></a>
+            <a href="<?= e(lang_url('/#faq')) ?>"><?= e(site_copy('nav_faq')) ?></a>
+            <a href="<?= e(lang_url('/#lead')) ?>"><?= e(site_copy('nav_contacts')) ?></a>
             <div class="nav-mobile-extra">
-                <a class="btn btn-primary btn-sm nav-cta-mobile" href="<?= e(lang_url('/#lead')) ?>"><?= e(__('cta_lead')) ?></a>
+                <a class="btn btn-primary btn-sm nav-cta-mobile" href="<?= e(lang_url('/#lead')) ?>"><?= e(site_copy('cta_lead')) ?></a>
             </div>
         </nav>
 
         <div class="header-actions">
             <button type="button" class="theme-toggle" id="themeToggle" aria-label="<?= e(__('theme_toggle')) ?>">◐</button>
-            <a class="btn btn-primary btn-sm header-cta-desktop" href="<?= e(lang_url('/#lead')) ?>"><?= e(__('cta_lead')) ?></a>
+            <a class="btn btn-primary btn-sm header-cta-desktop" href="<?= e(lang_url('/#lead')) ?>"><?= e(site_copy('cta_lead')) ?></a>
             <button type="button" class="nav-toggle" id="navToggle" aria-label="<?= e(__('menu')) ?>" aria-expanded="false" aria-controls="siteNav">☰</button>
         </div>
     </div>

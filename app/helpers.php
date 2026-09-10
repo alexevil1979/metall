@@ -67,6 +67,45 @@ function setting(string $key, string $default = ''): string
         : $default;
 }
 
+/** Текст лендинга из settings с fallback на lang/ru.php */
+function site_copy(string $key, ?string $langKey = null): string
+{
+    $v = setting($key, '');
+    if ($v !== '') {
+        return $v;
+    }
+    return __($langKey ?? $key);
+}
+
+/** @return list<mixed> */
+function setting_json(string $key, array $default = []): array
+{
+    $raw = setting($key, '');
+    if ($raw === '') {
+        return $default;
+    }
+    $data = json_decode($raw, true);
+    return is_array($data) ? $data : $default;
+}
+
+/** @return list<string> */
+function setting_lines(string $key, array $default = []): array
+{
+    $raw = setting($key, '');
+    if ($raw === '') {
+        return $default;
+    }
+    $lines = preg_split('/\R/u', $raw) ?: [];
+    $out = [];
+    foreach ($lines as $line) {
+        $line = trim((string)$line);
+        if ($line !== '') {
+            $out[] = $line;
+        }
+    }
+    return $out !== [] ? $out : $default;
+}
+
 function service_field(array $service, string $field): string
 {
     return (string)($service[$field] ?? '');

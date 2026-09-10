@@ -12,6 +12,32 @@ use App\Models\Setting;
 
 final class SettingsController
 {
+    /** @var list<string> */
+    private const KEYS = [
+        'public_url', 'site_name', 'site_name_latin', 'site_role', 'site_tagline', 'hero_offer', 'hero_sub',
+        'phone', 'email', 'telegram', 'whatsapp', 'youtube', 'vk', 'city',
+        'experience_years', 'projects_count', 'response_hours',
+        'stat_years_label', 'stat_projects_label', 'stat_response_label', 'stat_hours_suffix',
+        'work_format', 'response_sla', 'not_doing', 'trust_block_title', 'not_doing_title',
+        'trust_bullets_json',
+        'cta_lead', 'cta_services', 'discuss_label', 'featured_label', 'optimal_label', 'portrait_alt',
+        'nav_services', 'nav_packages', 'nav_gallery', 'nav_process', 'nav_faq', 'nav_contacts',
+        'services_title', 'services_sub', 'packages_title', 'packages_sub',
+        'process_title', 'process_sub', 'process_steps_json',
+        'gallery_title', 'gallery_sub', 'gallery_youtube_label', 'gallery_json',
+        'stack_title', 'stack_sub', 'stack_items',
+        'cases_title', 'cases_sub', 'case_link',
+        'faq_title', 'faq_sub', 'faq_json',
+        'lead_title', 'lead_sub', 'lead_message_ph', 'submit_label',
+        'yandex_metrika', 'google_analytics', 'og_image',
+        'privacy_text', 'offer_text',
+    ];
+
+    /** @var list<string> */
+    private const JSON_KEYS = [
+        'trust_bullets_json', 'process_steps_json', 'gallery_json', 'faq_json',
+    ];
+
     public function edit(): void
     {
         Auth::requireLogin();
@@ -27,15 +53,8 @@ final class SettingsController
     {
         Auth::requireLogin();
         Csrf::requireValid();
-        $keys = [
-            'public_url', 'site_name', 'site_name_latin', 'site_role', 'site_tagline', 'hero_offer', 'hero_sub',
-            'phone', 'email', 'telegram', 'whatsapp', 'youtube', 'vk', 'city',
-            'experience_years', 'projects_count', 'response_hours',
-            'work_format', 'response_sla', 'not_doing',
-            'yandex_metrika', 'google_analytics', 'faq_json', 'og_image',
-        ];
         $pairs = [];
-        foreach ($keys as $key) {
+        foreach (self::KEYS as $key) {
             $val = trim((string)Request::input($key, ''));
             if ($key === 'experience_years') {
                 $val = preg_replace('/\++$/', '+', $val) ?? $val;
@@ -45,6 +64,14 @@ final class SettingsController
             }
             if ($key === 'public_url' && $val !== '') {
                 $val = rtrim($val, '/');
+            }
+            if (in_array($key, self::JSON_KEYS, true) && $val !== '') {
+                $decoded = json_decode($val, true);
+                if (!is_array($decoded)) {
+                    flash('error', 'Некорректный JSON в поле «' . $key . '»');
+                    redirect('/admin/settings');
+                }
+                $val = json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             }
             $pairs[$key] = $val;
         }
