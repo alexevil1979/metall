@@ -459,19 +459,33 @@ html[data-theme="dark"] .package-ribbon { color: #fff; }
   position: fixed;
   right: max(.75rem, env(safe-area-inset-right, 0px));
   bottom: max(.75rem, env(safe-area-inset-bottom, 0px));
-  display: flex; flex-direction: column; gap: .45rem; z-index: 40;
+  display: flex; flex-direction: column; gap: .5rem; z-index: 40;
 }
 .float-btn {
-  width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
-  color: #fff !important; font-weight: 800; text-decoration: none !important;
-  box-shadow: 0 10px 24px rgba(0,0,0,.22);
-  transition: transform .15s ease;
+  width: 48px; height: 48px; border-radius: 14px;
+  display: grid; place-items: center;
+  color: #fff !important;
+  text-decoration: none !important;
+  background: #1c1f24;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 10px 24px rgba(20, 20, 20, .28);
+  transition: transform .18s var(--ease), background .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
-.float-btn:hover { transform: translateY(-2px); text-decoration: none; }
+.float-btn svg { display: block; }
+.float-btn:hover {
+  transform: translateY(-2px);
+  text-decoration: none;
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: 0 12px 28px rgba(196, 22, 28, .28);
+}
 .float-btn.wa { background: #128c7e; }
 .float-btn.tg { background: #229ed9; }
 .float-btn.vk { background: #0077ff; }
-.float-btn.yt { background: #c4302b; }
+.float-btn.yt { background: var(--accent); }
+.float-btn.wa:hover { background: #0e7a6e; }
+.float-btn.tg:hover { background: #1b8fc4; }
+.float-btn.vk:hover { background: #0066dd; }
+.float-btn.yt:hover { background: var(--accent-2); }
 
 .toast {
   position: fixed; left: 50%;
@@ -522,7 +536,8 @@ html[data-theme="dark"] .package-ribbon { color: #fff; }
     flex-direction: row; flex-wrap: wrap; justify-content: flex-end;
     max-width: calc(100vw - 1.2rem);
   }
-  .float-btn { width: 42px; height: 42px; font-size: .72rem; border-radius: 12px; }
+  .float-btn { width: 42px; height: 42px; border-radius: 12px; }
+  .float-btn svg { width: 20px; height: 20px; }
   .section-cta { padding-bottom: 5.5rem; }
   .site-footer { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); }
 }
